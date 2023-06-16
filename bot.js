@@ -1,6 +1,6 @@
 const prompt = require('prompt-sync')();
 
-// Função para gerar uma senha aleatória
+// Função para gerar senhas aleatória
 function gerarSenha() {
   var caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   var senha = '';
@@ -19,7 +19,7 @@ function bot() {
   var senhaInserida = prompt('Insira a senha: ');
 
   if (senhaInserida === senhaGerada) {
-    console.log('OK');
+    console.log('Ok');
   } else {
     console.log('Error');
   }
