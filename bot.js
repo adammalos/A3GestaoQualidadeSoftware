@@ -61,6 +61,10 @@ function recuperarSenha() {
 
       enviarEmailNovaSenha(emailCadastrado, novaSenha);
 
+      setTimeout(function() {
+        console.log('O tempo para a nova senha expirou.');
+      }, 60000); // 10 segundos
+
       recuperarSenha(); // Chamada recursiva para permitir uma nova tentativa de senha
     } else {
       console.log('Acesso negado.');
