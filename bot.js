@@ -5,67 +5,84 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: 'hotmail',
   auth: {
-    user: 'senharec0@outlook.com',
-    pass: 'S0Ks9eWIlx8@'
+    user: 'enviadasenha@outlook.com',
+    pass: 'W7bp!9e7L%WS'
   }
 });
 
 // E-mail e senha cadastrados
-const emailCadastrado = 'admin@email.com';
 let senhaCadastrada = 'admin1234';
 
 // Função para gerar uma senha aleatória
 function gerarSenha() {
-  var caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  var senha = '';
-  for (var i = 0; i < 8; i++) {
-    var indice = Math.floor(Math.random() * caracteres.length);
+  const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let senha = '';
+  for (let i = 0; i < 8; i++) {
+    const indice = Math.floor(Math.random() * caracteres.length);
     senha += caracteres.charAt(indice);
   }
   return senha;
 }
 
 // Função para enviar o e-mail com a nova senha
-function enviarEmailNovaSenha(email, novaSenha) {
+async function enviarEmailNovaSenha(email, novaSenha) {
   const mensagem = {
-    from: 'senharec0@outlook.com',
+    from: 'enviadasenha@outlook.com',
     to: email,
     subject: 'Nova senha gerada',
     text: `Sua nova senha é: ${novaSenha}`
   };
 
-  transporter.sendMail(mensagem, function(error, info) {
-    if (error) {
-      console.log('Erro ao enviar e-mail:', error);
-    } else {
-      console.log('E-mail enviado com a nova senha:', info.response);
-    }
-  });
+  try {
+    const info = await transporter.sendMail(mensagem);
+    console.log('E-mail enviado com a nova senha:', info.response);
+  } catch (error) {
+    console.log('Erro ao enviar e-mail:', error);
+  }
 }
 
 // Função principal do sistema de recuperação de senha
-function recuperarSenha() {
-  var senhaInserida = prompt('Insira a senha: ');
+async function recuperarSenha() {
+  const senhaInserida = prompt('Insira a senha: ');
 
   if (senhaInserida === senhaCadastrada) {
     console.log('Senha correta. Acesso permitido.');
   } else {
     console.log('Senha incorreta.');
 
-    var criarNovaSenha = prompt('Deseja criar uma nova senha? (sim/não): ');
+    const criarNovaSenha = prompt('Deseja criar uma nova senha? (sim/não): ');
 
     if (criarNovaSenha.toLowerCase() === 'sim') {
-      var novaSenha = gerarSenha();
+      const novaSenha = gerarSenha();
       senhaCadastrada = novaSenha;
       console.log('Nova senha gerada:', novaSenha);
 
-      enviarEmailNovaSenha(emailCadastrado, novaSenha);
+      await enviarEmailNovaSenha('admin@email.com', novaSenha);
 
-      setTimeout(function() {
-        console.log('O tempo para a nova senha expirou.');
-      }, 60000); // 10 segundos
+      setTimeout(async function() {
+        console.log('Acesso negado. O tempo para a nova senha expirou.');
 
-      recuperarSenha(); // Chamada recursiva para permitir uma nova tentativa de senha
+        const enviarNovamente = prompt('Deseja enviar um novo e-mail com a senha? (sim/não): ');
+        if (enviarNovamente.toLowerCase() === 'sim') {
+          const novaSenha = gerarSenha();
+          senhaCadastrada = novaSenha;
+          console.log('Nova senha gerada:', novaSenha);
+
+          await enviarEmailNovaSenha(novaSenha);
+          await recuperarSenha();
+        } else {
+          console.log('Acesso negado.');
+        }
+      }, 600000); // 10 segundos
+
+      console.log('Aguarde o e-mail com a nova senha...');
+      const senhaInserida = prompt('Insira a nova senha recebida por e-mail: ');
+
+      if (senhaInserida === novaSenha) {
+        console.log('Senha correta. Acesso permitido.');
+      } else {
+        console.log('Senha incorreta. Acesso negado.');
+      }
     } else {
       console.log('Acesso negado.');
     }
