@@ -1,5 +1,6 @@
 {
 	"dependencies": {
+		"jest": "^29.5.0",
 		"nodemailer": "^6.9.3",
 		"prompt-sync": "^4.2.0"
 	}

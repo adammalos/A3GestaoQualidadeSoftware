@@ -73,7 +73,7 @@ async function recuperarSenha() {
         } else {
           console.log('Acesso negado.');
         }
-      }, 600000); // 10 segundos
+      }, 50000); // 10 segundos
 
       console.log('Aguarde o e-mail com a nova senha...');
       const senhaInserida = prompt('Insira a nova senha recebida por e-mail: ');
