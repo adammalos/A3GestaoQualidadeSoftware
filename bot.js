@@ -5,13 +5,14 @@ const nodemailer = require('nodemailer');
 const transporter = nodemailer.createTransport({
   service: 'hotmail',
   auth: {
-    user: 'enviadasenha@outlook.com',
-    pass: 'W7bp!9e7L%WS'
+    user: 'RecTeste@outlook.com',
+    pass: '6mvF#m1Q8K17'
   }
 });
 
 // E-mail e senha cadastrados
 let senhaCadastrada = 'admin1234';
+let senhaExpirada = false; // Variável para controlar se o tempo expirou
 
 // Função para gerar uma senha aleatória
 function gerarSenha() {
@@ -27,7 +28,7 @@ function gerarSenha() {
 // Função para enviar o e-mail com a nova senha
 async function enviarEmailNovaSenha(email, novaSenha) {
   const mensagem = {
-    from: 'enviadasenha@outlook.com',
+    from: 'RecTeste@outlook.com',
     to: email,
     subject: 'Nova senha gerada',
     text: `Sua nova senha é: ${novaSenha}`
@@ -38,6 +39,24 @@ async function enviarEmailNovaSenha(email, novaSenha) {
     console.log('E-mail enviado com a nova senha:', info.response);
   } catch (error) {
     console.log('Erro ao enviar e-mail:', error);
+  }
+}
+
+// Função para tratar acesso negado após o tempo expirado
+function acessoNegado() {
+  console.log('Acesso negado. O tempo para a nova senha expirou.');
+
+  const enviarNovamente = prompt('Deseja enviar um novo e-mail com a senha? (sim/não): ');
+  if (enviarNovamente.toLowerCase() === 'sim') {
+    const novaSenha = gerarSenha();
+    senhaCadastrada = novaSenha;
+    console.log('Nova senha gerada:', novaSenha);
+
+    enviarEmailNovaSenha(novaSenha);
+
+    recuperarSenha();
+  } else {
+    console.log('Acesso negado.');
   }
 }
 
@@ -57,31 +76,24 @@ async function recuperarSenha() {
       senhaCadastrada = novaSenha;
       console.log('Nova senha gerada:', novaSenha);
 
-      await enviarEmailNovaSenha('admin@email.com', novaSenha);
+      enviarEmailNovaSenha('admin@email.com', novaSenha);
 
-      setTimeout(async function() {
-        console.log('Acesso negado. O tempo para a nova senha expirou.');
-
-        const enviarNovamente = prompt('Deseja enviar um novo e-mail com a senha? (sim/não): ');
-        if (enviarNovamente.toLowerCase() === 'sim') {
-          const novaSenha = gerarSenha();
-          senhaCadastrada = novaSenha;
-          console.log('Nova senha gerada:', novaSenha);
-
-          await enviarEmailNovaSenha(novaSenha);
-          await recuperarSenha();
-        } else {
-          console.log('Acesso negado.');
+      setTimeout(function() {
+        senhaExpirada = true; // Define a variável para indicar que o tempo expirou
+        if (senhaInserida !== novaSenha) {
+          acessoNegado();
         }
-      }, 50000); // 10 segundos
+      }, 10000); // 10 segundos
 
       console.log('Aguarde o e-mail com a nova senha...');
-      const senhaInserida = prompt('Insira a nova senha recebida por e-mail: ');
+      const senhaInseridaEmail = prompt('Insira a nova senha recebida por e-mail: ');
 
-      if (senhaInserida === novaSenha) {
+      if (!senhaExpirada && senhaInseridaEmail === novaSenha) {
         console.log('Senha correta. Acesso permitido.');
-      } else {
+      } else if (!senhaExpirada) {
         console.log('Senha incorreta. Acesso negado.');
+      } else {
+        acessoNegado();
       }
     } else {
       console.log('Acesso negado.');
