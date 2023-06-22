@@ -105,25 +105,3 @@ describe('Envio de E-mail', () => {
     }
   });
 });
-
-  // Teste de senha expirada
-  // describe('Senha Expirada', () => {
-  //   test('Acesso negado após o tempo expirado', async () => {
-  //     const senhaInserida = 'senhaerrada';
-  //     const novaSenha = gerarSenha();
-  //     jest.spyOn(global.Math, 'random').mockReturnValueOnce(0.5);
-  //     const consoleLogMock = jest.spyOn(console, 'log').mockImplementation();
-  //     const sendMailMock = jest.spyOn(transporter, 'sendMail').mockResolvedValue({});
-  //     const enviarEmailNovaSenhaMock = jest.fn();
-
-  //     try {
-  //       await recuperarSenha(senhaInserida);
-  //     } catch (error) {
-  //       expect(error.message).toBe('Senha incorreta.');
-  //     }
-
-  //     expect(consoleLogMock).toHaveBeenCalledWith(expect.stringContaining('Acesso negado.'));
-  //     expect(consoleLogMock).toHaveBeenCalledWith('Nova senha gerada:', novaSenha);
-  //     expect(enviarEmailNovaSenhaMock).toHaveBeenCalledWith(expect.any(String), novaSenha);
-  //   });
-  // });
